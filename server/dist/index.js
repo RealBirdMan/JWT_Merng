@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
@@ -25,7 +26,8 @@ const UserResolvers_1 = require("./schema/UserResolvers");
         schema: yield type_graphql_1.buildSchema({
             resolvers: [UserResolvers_1.UserResolvers],
             validate: false,
-        })
+        }),
+        context: ({ req, res }) => ({ req, res })
     });
     apolloServer.applyMiddleware({ app });
     app.listen(8080, () => {

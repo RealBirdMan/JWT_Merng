@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv/config";
 import express from "express";
 import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
@@ -12,7 +13,7 @@ import {UserResolvers} from "./schema/UserResolvers"
     const app = express();
 
    // //setup TypeOrm Connection
-    await createConnection();
+     await createConnection();
 
 
     //setup graphQl apollo
@@ -20,7 +21,8 @@ import {UserResolvers} from "./schema/UserResolvers"
         schema: await buildSchema({
             resolvers: [UserResolvers],
             validate: false,
-        })
+        }),
+        context: ({req, res}) => ({req, res}) 
     });
     apolloServer.applyMiddleware({app});
 
