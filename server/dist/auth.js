@@ -7,7 +7,7 @@ const createAccessToken = (user) => {
 };
 exports.createAccessToken = createAccessToken;
 const createRefreshToken = (user) => {
-    return jsonwebtoken_1.sign({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+    return jsonwebtoken_1.sign({ userId: user.id, tokenVersion: user.tokenVersion }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 };
 exports.createRefreshToken = createRefreshToken;
 //# sourceMappingURL=auth.js.map

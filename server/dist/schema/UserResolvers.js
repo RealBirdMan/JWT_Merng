@@ -23,7 +23,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolvers = void 0;
 const type_graphql_1 = require("type-graphql");
+const type_graphql_2 = require("type-graphql");
 const bcryptjs_1 = require("bcryptjs");
+const typeorm_1 = require("typeorm");
 const User_1 = require("../entity/User");
 const auth_1 = require("../auth");
 const isAuthMiddleware_1 = require("../isAuthMiddleware");
@@ -31,11 +33,11 @@ const sendRefreshToken_1 = require("../sendRefreshToken");
 let LoginResponse = class LoginResponse {
 };
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_2.Field(),
     __metadata("design:type", String)
 ], LoginResponse.prototype, "accessToken", void 0);
 LoginResponse = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_2.ObjectType()
 ], LoginResponse);
 let UserResolvers = class UserResolvers {
     protectedRoute({ payload }) {
@@ -43,6 +45,14 @@ let UserResolvers = class UserResolvers {
     }
     users() {
         return User_1.User.find();
+    }
+    revokeTokensForUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield typeorm_1.getConnection()
+                .getRepository(User_1.User)
+                .increment({ id: userId }, "tokenVersion", 1);
+            return true;
+        });
     }
     register(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,38 +82,45 @@ let UserResolvers = class UserResolvers {
     }
 };
 __decorate([
-    type_graphql_1.Query(() => String),
-    type_graphql_1.UseMiddleware(isAuthMiddleware_1.isAuth),
-    __param(0, type_graphql_1.Ctx()),
+    type_graphql_2.Query(() => String),
+    type_graphql_2.UseMiddleware(isAuthMiddleware_1.isAuth),
+    __param(0, type_graphql_2.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserResolvers.prototype, "protectedRoute", null);
 __decorate([
-    type_graphql_1.Query(() => [User_1.User]),
+    type_graphql_2.Query(() => [User_1.User]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolvers.prototype, "users", null);
 __decorate([
-    type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg("email")),
-    __param(1, type_graphql_1.Arg("password")),
+    type_graphql_2.Mutation(() => Boolean),
+    __param(0, type_graphql_2.Arg("userId", () => type_graphql_1.Int)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserResolvers.prototype, "revokeTokensForUser", null);
+__decorate([
+    type_graphql_2.Mutation(() => Boolean),
+    __param(0, type_graphql_2.Arg("email")),
+    __param(1, type_graphql_2.Arg("password")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], UserResolvers.prototype, "register", null);
 __decorate([
-    type_graphql_1.Mutation(() => LoginResponse),
-    __param(0, type_graphql_1.Arg("email")),
-    __param(1, type_graphql_1.Arg("password")),
-    __param(2, type_graphql_1.Ctx()),
+    type_graphql_2.Mutation(() => LoginResponse),
+    __param(0, type_graphql_2.Arg("email")),
+    __param(1, type_graphql_2.Arg("password")),
+    __param(2, type_graphql_2.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolvers.prototype, "login", null);
 UserResolvers = __decorate([
-    type_graphql_1.Resolver()
+    type_graphql_2.Resolver()
 ], UserResolvers);
 exports.UserResolvers = UserResolvers;
 //# sourceMappingURL=UserResolvers.js.map

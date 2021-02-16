@@ -1,5 +1,7 @@
+import { Int } from 'type-graphql';
 import {Resolver, Query, Mutation, Arg, ObjectType, Field, Ctx, UseMiddleware} from 'type-graphql';
 import {hash, compare} from 'bcryptjs';
+import {getConnection} from "typeorm";
 
 import {User} from '../entity/User'
 import { MyContext } from 'src/MyContext';
@@ -27,6 +29,17 @@ export class UserResolvers {
     @Query(() => [User])
     users() {
         return User.find();
+    }
+
+    @Mutation(() => Boolean)
+    async revokeTokensForUser(
+        @Arg("userId", () => Int) userId: number
+    ){
+        await getConnection()
+        .getRepository(User)
+        .increment({id: userId}, "tokenVersion", 1);
+
+        return true;
     }
 
     @Mutation(() => Boolean)
