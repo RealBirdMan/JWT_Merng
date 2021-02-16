@@ -27,6 +27,7 @@ const bcryptjs_1 = require("bcryptjs");
 const User_1 = require("../entity/User");
 const auth_1 = require("../auth");
 const isAuthMiddleware_1 = require("../isAuthMiddleware");
+const sendRefreshToken_1 = require("../sendRefreshToken");
 let LoginResponse = class LoginResponse {
 };
 __decorate([
@@ -65,9 +66,7 @@ let UserResolvers = class UserResolvers {
             if (!valid) {
                 throw new Error("bad Password");
             }
-            res.cookie("jid", auth_1.createRefreshToken(user), {
-                httpOnly: true
-            });
+            sendRefreshToken_1.sendRefreshToken(res, auth_1.createRefreshToken(user));
             return auth_1.createAccessToken(user);
         });
     }

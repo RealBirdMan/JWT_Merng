@@ -5,6 +5,7 @@ import {User} from '../entity/User'
 import { MyContext } from 'src/MyContext';
 import { createAccessToken, createRefreshToken } from '../auth';
 import { isAuth } from '../isAuthMiddleware';
+import {sendRefreshToken} from "../sendRefreshToken"
 
 @ObjectType()
 class LoginResponse{
@@ -14,6 +15,7 @@ class LoginResponse{
 
 @Resolver()
 export class UserResolvers {
+    
     @Query(() => String)
     @UseMiddleware(isAuth)
     protectedRoute(
@@ -58,14 +60,8 @@ export class UserResolvers {
             throw new Error("bad Password")
         }
 
-        //refresh
-        res.cookie(
-            "jid",
-            createRefreshToken(user),
-        {
-            httpOnly: true
-        }
-        )
+        //refresh Token
+        sendRefreshToken(res, createRefreshToken(user))
 
         return createAccessToken(user);
     }
